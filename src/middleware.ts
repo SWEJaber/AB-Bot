@@ -6,16 +6,12 @@ export function middleware(request: NextRequest) {
     console.log("request: ", request.nextUrl.pathname);
 
     if (!isAuthenticated) {
-        if (request.nextUrl.pathname === "/login") {
-            return NextResponse.next();
+        if (request.nextUrl.pathname !== "/login") {
+            return NextResponse.redirect(new URL("/login", request.url))
         }
-
-        return NextResponse.redirect(new URL("/login", request.url))
-    } else {
-        if (request.nextUrl.pathname === "/login") {
-            return NextResponse.redirect(new URL("/bot", request.url))
-        }
-    }
+    } else if (request.nextUrl.pathname !== "/bot") {
+        return NextResponse.redirect(new URL("/bot", request.url))
+    }    
 
     return NextResponse.next();
 }
