@@ -2,7 +2,7 @@ import { NextResponse, NextRequest} from 'next/server';
 
 export function middleware(request: NextRequest) {
 
-    const isAuthenticated = false
+    const isAuthenticated = true
     console.log("request: ", request.nextUrl.pathname);
 
     if (!isAuthenticated) {
@@ -25,6 +25,6 @@ export const config = {
      * - favicon.ico (favicon file)
      * - All files inside the public folder can also be excluded
      */
-    '/((?!_next/static|_next/image|favicon.ico|public/|assets/).*)',
+    '/((?!_next/static|_next/image|favicon.ico|api|public/|assets/).*)',
   ],
 };
