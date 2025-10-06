@@ -1,6 +1,6 @@
 "use client";
 
-import { useReducer, useState } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 
 type Role = "user" | "assistant";
 
@@ -72,6 +72,7 @@ function reducer(state: State, action: Action): State {
 
 export default function Bot() {
   const [mode, setMode] = useState<"chat" | "search">("chat");
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const toggleMode = () =>
     setMode((value) => (value === "chat" ? "search" : "chat"));
@@ -116,12 +117,26 @@ export default function Bot() {
     dispatch({ type: "FINALIZE_ASSISTANT_MESSAGE" });
   };
 
+  useEffect(() => {
+    const container = containerRef.current;
+
+    if (container) container.scrollTop = container.scrollHeight;
+  }, [chatState.messages.length]);
+
+  const isInputEnabled = useMemo(
+    () => chatState.botState === "standby",
+    [chatState.botState, chatState.input]
+  );
+
   return (
-    <div className="p-6 max-w-2xl mx-auto">
+    <div className="h-[calc(100vh-4rem)] p-6 max-w-2xl mx-auto">
       <h1 className="text-xl font-bold mb-4">Chat with AP Bot</h1>
       <h2>{mode}</h2>
 
-      <div className="space-y-4 mb-4 h-[50vh] overflow-y-scroll">
+      <div
+        ref={containerRef}
+        className="no-scrollbar h-[75%] space-y-4 mb-4 h-[50vh] overflow-y-scroll scroll-smooth"
+      >
         {chatState.messages.map((msg, i) => (
           <p key={i}>
             <strong>{msg.role}:</strong> {msg.content}
@@ -139,7 +154,7 @@ export default function Bot() {
 
       <button
         type="submit"
-        className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
+        className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50 hover:cursor-pointer"
         disabled={chatState.botState === "loading"}
         onClick={toggleMode}
       >
@@ -155,12 +170,12 @@ export default function Bot() {
           placeholder={
             mode === "chat" ? "Type your message" : "Let's search the web!"
           }
-          disabled={chatState.botState === "loading"}
+          disabled={!isInputEnabled}
         />
         <button
           type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
-          disabled={chatState.botState === "loading"}
+          className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50 hover:cursor-pointer"
+          disabled={!isInputEnabled}
         >
           Send
         </button>
