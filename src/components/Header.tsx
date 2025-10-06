@@ -4,19 +4,17 @@ import Link from "next/link";
 import React from "react";
 
 import { useSession, signOut } from "next-auth/react";
+import Image from "next/image";
+import { BOT_IMAGE_SRC } from "@/app/constants";
 
 const Header = () => {
   const { data: session } = useSession();
 
   return (
-    <header className="sticky h-16 w-full p-5 bg-amber-300 flex justify-between items-center">
-      {/* <h1>AB-Bot Site</h1> */}
-
-      {/* <div className='h-8 aspect-square bg-black'>
-
-        </div> */}
-
-      <Link href={"/bot"}>AB Bot</Link>
+    <header className="sticky h-16 w-full p-5 bg-amber-400 flex justify-between items-center">
+      <Link href={"/bot"}>
+        <Image src={BOT_IMAGE_SRC} alt="AP Bot" height={50} width={50} />
+      </Link>
 
       {!!session && (
         <button
