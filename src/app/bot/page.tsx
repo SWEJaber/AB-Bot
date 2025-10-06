@@ -1,13 +1,8 @@
 "use client";
 
+import Messages from "@/components/Messages";
+import { Message } from "@/types";
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";
-
-type Role = "user" | "assistant";
-
-type Message = {
-  role: Role;
-  content: string;
-};
 
 type State = {
   input: string;
@@ -72,8 +67,6 @@ function reducer(state: State, action: Action): State {
 
 export default function Bot() {
   const [mode, setMode] = useState<"chat" | "search">("chat");
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [isAutoScroll, setIsAutoScroll] = useState<boolean>(true);
 
   const toggleMode = () =>
     setMode((value) => (value === "chat" ? "search" : "chat"));
@@ -118,53 +111,21 @@ export default function Bot() {
     dispatch({ type: "FINALIZE_ASSISTANT_MESSAGE" });
   };
 
-  useEffect(() => {
-    const container = containerRef.current;
-
-    if (container && isAutoScroll) container.scrollTop = container.scrollHeight;
-  }, [isAutoScroll, chatState.messages.length, chatState.stream]);
-
   const isInputEnabled = useMemo(
     () => chatState.botState === "standby",
     [chatState.botState, chatState.input]
   );
-
-  const handleScroll = () => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    // If user is near bottom (<50px), allow auto-scroll
-    const atBottom =
-      container.scrollHeight - container.scrollTop - container.clientHeight <
-      50;
-
-    setIsAutoScroll(atBottom);
-  };
 
   return (
     <div className="h-[calc(100vh-4rem)] p-6 max-w-2xl mx-auto">
       <h1 className="text-xl font-bold mb-4">Chat with AP Bot</h1>
       <h2>{mode}</h2>
 
-      <div
-        ref={containerRef}
-        className="no-scrollbar h-[75%] space-y-4 mb-4 h-[50vh] overflow-y-scroll scroll-smooth"
-        onScroll={handleScroll} // Listen to user scroll
-      >
-        {chatState.messages.map((msg, i) => (
-          <p key={i}>
-            <strong>{msg.role}:</strong> {msg.content}
-          </p>
-        ))}
-
-        {chatState.stream && (
-          <p>
-            <strong>assistant:</strong> {chatState.stream}
-          </p>
-        )}
-
-        {chatState.botState === "loading" ? "loading..." : ""}
-      </div>
+      <Messages
+        messages={chatState.messages}
+        stream={chatState.stream}
+        botState={chatState.botState}
+      />
 
       <button
         type="submit"
