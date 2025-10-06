@@ -73,6 +73,7 @@ function reducer(state: State, action: Action): State {
 export default function Bot() {
   const [mode, setMode] = useState<"chat" | "search">("chat");
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isAutoScroll, setIsAutoScroll] = useState<boolean>(true);
 
   const toggleMode = () =>
     setMode((value) => (value === "chat" ? "search" : "chat"));
@@ -120,13 +121,25 @@ export default function Bot() {
   useEffect(() => {
     const container = containerRef.current;
 
-    if (container) container.scrollTop = container.scrollHeight;
-  }, [chatState.messages.length, chatState.stream]);
+    if (container && isAutoScroll) container.scrollTop = container.scrollHeight;
+  }, [isAutoScroll, chatState.messages.length, chatState.stream]);
 
   const isInputEnabled = useMemo(
     () => chatState.botState === "standby",
     [chatState.botState, chatState.input]
   );
+
+  const handleScroll = () => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    // If user is near bottom (<50px), allow auto-scroll
+    const atBottom =
+      container.scrollHeight - container.scrollTop - container.clientHeight <
+      50;
+
+    setIsAutoScroll(atBottom);
+  };
 
   return (
     <div className="h-[calc(100vh-4rem)] p-6 max-w-2xl mx-auto">
@@ -136,6 +149,7 @@ export default function Bot() {
       <div
         ref={containerRef}
         className="no-scrollbar h-[75%] space-y-4 mb-4 h-[50vh] overflow-y-scroll scroll-smooth"
+        onScroll={handleScroll} // Listen to user scroll
       >
         {chatState.messages.map((msg, i) => (
           <p key={i}>
