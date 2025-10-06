@@ -1,8 +1,14 @@
 import { NextResponse, NextRequest} from 'next/server';
 
-export function middleware(request: NextRequest) {
+import { getToken } from "next-auth/jwt"
 
-    const isAuthenticated = true
+
+export async function middleware(request: NextRequest) {
+
+    const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET })
+
+    const isAuthenticated = !!token;
+    
     console.log("request: ", request.nextUrl.pathname);
 
     if (!isAuthenticated) {
