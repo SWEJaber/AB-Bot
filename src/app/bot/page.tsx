@@ -121,7 +121,7 @@ export default function Bot() {
     const container = containerRef.current;
 
     if (container) container.scrollTop = container.scrollHeight;
-  }, [chatState.messages.length]);
+  }, [chatState.messages.length, chatState.stream]);
 
   const isInputEnabled = useMemo(
     () => chatState.botState === "standby",
