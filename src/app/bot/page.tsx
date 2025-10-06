@@ -1,41 +1,35 @@
 "use client";
 
+import InputField from "@/components/InputField";
 import Messages from "@/components/Messages";
-import { Message } from "@/types";
-import { useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { ChatMode, Message } from "@/types";
+import { useReducer, useState } from "react";
 
 type State = {
-  input: string;
   messages: Message[];
   stream: string;
   botState: "loading" | "typing" | "standby";
 };
 
 const initialState: State = {
-  input: "",
   messages: [],
   stream: "",
   botState: "standby",
 };
 
 type Action =
-  | { type: "SET_INPUT"; payload: string }
   | { type: "ADD_USER_MESSAGE"; payload: string }
   | { type: "APPEND_STREAM"; payload: string }
   | { type: "RESET_STREAM" }
   | { type: "FINALIZE_ASSISTANT_MESSAGE" }
-  | { type: "SET_LOADING"; payload: boolean }
-  | { type: "SET_BOT_TYPING"; payload: boolean };
+  | { type: "SET_LOADING"; payload: boolean };
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
-    case "SET_INPUT":
-      return { ...state, input: action.payload };
     case "ADD_USER_MESSAGE":
       return {
         ...state,
 
-        input: "",
         messages: [
           ...state.messages,
           { role: "user", content: action.payload },
@@ -66,22 +60,20 @@ function reducer(state: State, action: Action): State {
 }
 
 export default function Bot() {
-  const [mode, setMode] = useState<"chat" | "search">("chat");
+  const [mode, setMode] = useState<ChatMode>("chat");
 
   const toggleMode = () =>
     setMode((value) => (value === "chat" ? "search" : "chat"));
 
   const [chatState, dispatch] = useReducer(reducer, initialState);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const sendMessage = async (messageContent: string) => {
+    if (!messageContent.trim()) return;
 
-    if (!chatState.input.trim()) return;
-
-    const userMessage: Message = { role: "user", content: chatState.input };
+    const userMessage: Message = { role: "user", content: messageContent };
     const updatedMessages = [...chatState.messages, userMessage];
 
-    dispatch({ type: "ADD_USER_MESSAGE", payload: chatState.input });
+    dispatch({ type: "ADD_USER_MESSAGE", payload: messageContent });
 
     dispatch({ type: "SET_LOADING", payload: true });
 
@@ -111,50 +103,27 @@ export default function Bot() {
     dispatch({ type: "FINALIZE_ASSISTANT_MESSAGE" });
   };
 
-  const isInputEnabled = useMemo(
-    () => chatState.botState === "standby",
-    [chatState.botState, chatState.input]
-  );
-
   return (
-    <div className="h-[calc(100vh-4rem)] p-6 max-w-2xl mx-auto">
-      <h1 className="text-xl font-bold mb-4">Chat with AP Bot</h1>
-      <h2>{mode}</h2>
+    <div className="h-[calc(100vh-4rem)] p-6 max-w-3xl mx-auto">
+      <h1 className="text-xl font-bold mb-4">
+        {mode === "chat" ? "Chat" : "Search the web"} with AP Bot
+      </h1>
 
-      <Messages
-        messages={chatState.messages}
-        stream={chatState.stream}
-        botState={chatState.botState}
-      />
-
-      <button
-        type="submit"
-        className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50 hover:cursor-pointer"
-        disabled={chatState.botState === "loading"}
-        onClick={toggleMode}
-      >
-        Switch to {mode === "chat" ? "search" : "chat"} mode
-      </button>
-      <form onSubmit={handleSubmit} className="flex gap-2">
-        <input
-          className="border px-3 py-2 rounded flex-1"
-          value={chatState.input}
-          onChange={(e) =>
-            dispatch({ type: "SET_INPUT", payload: e.target.value })
-          }
-          placeholder={
-            mode === "chat" ? "Type your message" : "Let's search the web!"
-          }
-          disabled={!isInputEnabled}
+      {chatState.messages.length > 0 && (
+        <Messages
+          messages={chatState.messages}
+          stream={chatState.stream}
+          botState={chatState.botState}
         />
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50 hover:cursor-pointer"
-          disabled={!isInputEnabled}
-        >
-          Send
-        </button>
-      </form>
+      )}
+
+      <InputField
+        mode={mode}
+        toggleMode={toggleMode}
+        botState={chatState.botState}
+        isDisabled={chatState.botState !== "standby"}
+        sendMessage={sendMessage}
+      />
     </div>
   );
 }

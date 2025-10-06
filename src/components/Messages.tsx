@@ -15,8 +15,12 @@ const MessageComponent = (props: { message: Message }) => {
   } = props;
 
   return (
-    <p>
-      <strong>{role}: </strong> {content}
+    <p
+      className={`bg-amber-500 max-w-[80%] p-2 rounded-2xl text-white ${
+        role === "user" ? "self-end" : "self-start"
+      }`}
+    >
+      {content}
     </p>
   );
 };
@@ -48,7 +52,7 @@ export default function Messages(props: Props) {
   return (
     <div
       ref={containerRef}
-      className="no-scrollbar h-[75%] space-y-4 mb-4 overflow-y-scroll scroll-smooth"
+      className="flex flex-col gap-2.5 no-scrollbar h-[75%] space-y-4 mb-4 overflow-y-scroll scroll-smooth"
       onScroll={handleScroll}
     >
       {messages.map((message, i) => (
@@ -56,9 +60,7 @@ export default function Messages(props: Props) {
       ))}
 
       {stream && (
-        <p>
-          <strong>assistant:</strong> {stream}
-        </p>
+        <MessageComponent message={{ role: "assistant", content: stream }} />
       )}
 
       {botState === "loading" ? "loading..." : ""}
