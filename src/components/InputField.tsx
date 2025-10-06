@@ -28,11 +28,15 @@ export default function InputField(props: Props) {
 
   return (
     <div
-      className={`flex justify-between items-center w-full h-12 px-3 ${
+      className={`my-auto flex justify-between items-center w-full h-12 px-3 ${
         isDisabled ? "bg-gray-500" : ""
       } border-black border-4 rounded-3xl overflow-hidden`}
     >
-      <IconButton isDisabled={isDisabled} onClick={toggleMode}>
+      <IconButton
+        title={mode === "chat" ? "Switch to search" : "Switch to chat"}
+        isDisabled={isDisabled}
+        onClick={toggleMode}
+      >
         {mode === "chat" ? <BiSearchAlt /> : <BiSolidChat />}
       </IconButton>
 
@@ -51,7 +55,11 @@ export default function InputField(props: Props) {
         }}
       />
 
-      <IconButton isDisabled={!messageContent} onClick={sendMessageWrapper}>
+      <IconButton
+        title={"send message"}
+        isDisabled={!messageContent}
+        onClick={sendMessageWrapper}
+      >
         <BiSolidSend />
       </IconButton>
     </div>

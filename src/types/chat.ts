@@ -8,3 +8,9 @@ export type Message = {
   content: string;
 };
 
+
+export type ChatState = {
+  messages: Message[];
+  stream: string;
+  botState: "loading" | "typing" | "standby";
+};

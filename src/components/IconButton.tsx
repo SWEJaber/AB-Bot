@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 
 interface Props {
+  title?: string;
   isDisabled: boolean;
 
   children: ReactNode;
@@ -9,10 +10,11 @@ interface Props {
 }
 
 export default function IconButton(props: Props) {
-  const { isDisabled, onClick, children } = props;
+  const { title, isDisabled, onClick, children } = props;
 
   return (
     <div
+      title={title}
       className={`flex items-center justify-center h-2/3 aspect-square rounded-full ${
         !isDisabled
           ? "bg-green-400 hover:bg-green-600 hover:cursor-pointer"

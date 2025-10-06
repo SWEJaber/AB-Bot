@@ -1,17 +1,11 @@
 "use client";
 
 import InputField from "@/components/InputField";
-import Messages from "@/components/Messages";
-import { ChatMode, Message } from "@/types";
+import Chat from "@/components/Chat";
+import { ChatMode, ChatState, Message } from "@/types";
 import { useReducer, useState } from "react";
 
-type State = {
-  messages: Message[];
-  stream: string;
-  botState: "loading" | "typing" | "standby";
-};
-
-const initialState: State = {
+const initialState: ChatState = {
   messages: [],
   stream: "",
   botState: "standby",
@@ -24,7 +18,7 @@ type Action =
   | { type: "FINALIZE_ASSISTANT_MESSAGE" }
   | { type: "SET_LOADING"; payload: boolean };
 
-function reducer(state: State, action: Action): State {
+function reducer(state: ChatState, action: Action): ChatState {
   switch (action.type) {
     case "ADD_USER_MESSAGE":
       return {
@@ -104,26 +98,28 @@ export default function Bot() {
   };
 
   return (
-    <div className="h-[calc(100vh-4rem)] p-6 max-w-3xl mx-auto">
+    <div className={"h-[calc(100vh-4rem)] p-6 max-w-3xl mx-auto "}>
       <h1 className="text-xl font-bold mb-4">
         {mode === "chat" ? "Chat" : "Search the web"} with AP Bot
       </h1>
 
-      {chatState.messages.length > 0 && (
-        <Messages
-          messages={chatState.messages}
-          stream={chatState.stream}
-          botState={chatState.botState}
-        />
-      )}
+      <div className="flex flex-col h-full justify-center">
+        {chatState.messages.length > 0 ? (
+          <Chat chatState={chatState} />
+        ) : (
+          <p className="text-center text-4xl">
+            Welcome to AP chat bot, Enjoy your stay here!
+          </p>
+        )}
 
-      <InputField
-        mode={mode}
-        toggleMode={toggleMode}
-        botState={chatState.botState}
-        isDisabled={chatState.botState !== "standby"}
-        sendMessage={sendMessage}
-      />
+        <InputField
+          mode={mode}
+          toggleMode={toggleMode}
+          botState={chatState.botState}
+          isDisabled={chatState.botState !== "standby"}
+          sendMessage={sendMessage}
+        />
+      </div>
     </div>
   );
 }

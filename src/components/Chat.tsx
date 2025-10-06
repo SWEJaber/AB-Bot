@@ -1,12 +1,13 @@
 "use client";
 
-import { BotState, Message } from "@/types";
+import { BOT_IMAGE_SRC } from "@/app/constants";
+import Avatar from "@/components/Avatar";
+import { ChatState, Message } from "@/types";
+import { useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
 
 interface Props {
-  messages: Message[];
-  stream: string;
-  botState: BotState;
+  chatState: ChatState;
 }
 
 const MessageComponent = (props: { message: Message }) => {
@@ -14,19 +15,30 @@ const MessageComponent = (props: { message: Message }) => {
     message: { role, content },
   } = props;
 
+  const session = useSession();
+
+  const avatarSrc =
+    role === "assistant" ? BOT_IMAGE_SRC : session.data?.user?.image ?? "";
+
   return (
-    <p
-      className={`bg-amber-500 max-w-[80%] p-2 rounded-2xl text-white ${
-        role === "user" ? "self-end" : "self-start"
+    <div
+      className={`flex gap-2  ${
+        role === "user" ? "flex-row-reverse" : "self-start"
       }`}
     >
-      {content}
-    </p>
+      <Avatar className="mt-1" src={avatarSrc} size={30} />
+
+      <p className={`bg-amber-500 max-w-[80%] p-2 rounded-2xl text-white `}>
+        {content}
+      </p>
+    </div>
   );
 };
 
-export default function Messages(props: Props) {
-  const { messages, stream, botState } = props;
+export default function Chat(props: Props) {
+  const {
+    chatState: { messages, stream, botState },
+  } = props;
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [isAutoScroll, setIsAutoScroll] = useState<boolean>(true);
@@ -63,7 +75,7 @@ export default function Messages(props: Props) {
         <MessageComponent message={{ role: "assistant", content: stream }} />
       )}
 
-      {botState === "loading" ? "loading..." : ""}
+      {botState === "loading" ? "thinking..." : ""}
     </div>
   );
 }
