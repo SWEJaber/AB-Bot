@@ -2,20 +2,18 @@
 
 import { BOT_IMAGE_SRC } from "@/app/constants";
 import Avatar from "@/components/Avatar";
-import { ChatMode, ChatState, Message } from "@/types";
+import { ChatState, Message } from "@/types";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 interface Props {
-  mode: ChatMode;
   chatState: ChatState;
 }
 
-const MessageComponent = (props: { mode: ChatMode; message: Message }) => {
+const MessageComponent = (props: { message: Message }) => {
   const {
-    mode,
-    message: { role, content, image },
+    message: { role, content, image, selectedMode },
   } = props;
 
   const session = useSession();
@@ -36,7 +34,7 @@ const MessageComponent = (props: { mode: ChatMode; message: Message }) => {
           image ? "w-[80%]" : "max-w-[80%]"
         } p-2 rounded-2xl  text-wrap`}
       >
-        {mode === "search" && role === "assistant" && (
+        {selectedMode === "search" && role === "assistant" && (
           <Image
             className="float-right ml-3 mb-2 rounded-2xl object-cover"
             src={image ?? BOT_IMAGE_SRC}
@@ -55,8 +53,7 @@ const MessageComponent = (props: { mode: ChatMode; message: Message }) => {
 
 export default function Chat(props: Props) {
   const {
-    mode,
-    chatState: { messages, stream, botState },
+    chatState: { messages, stream, botState, mode },
   } = props;
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -87,10 +84,10 @@ export default function Chat(props: Props) {
       onScroll={handleScroll}
     >
       {messages.map((message, i) => (
-        <MessageComponent key={"" + i} mode={mode} message={message} />
+        <MessageComponent key={"" + i} message={message} />
       ))}
 
-      {stream.content && <MessageComponent mode={mode} message={stream} />}
+      {stream.content && <MessageComponent message={stream} />}
 
       {botState === "loading"
         ? mode === "chat"

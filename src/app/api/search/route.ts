@@ -39,8 +39,6 @@ export async function POST(req: Request) {
     googleSearch(message, "image"),
   ]);
 
-
-  console.log("imageResults: ", imageResults);
   
   const image = imageResults?.[0]?.imageUrl ?? null;
   const context = imageResults?.[0]?.context ?? null;

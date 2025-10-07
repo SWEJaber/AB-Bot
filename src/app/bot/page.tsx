@@ -2,16 +2,18 @@
 
 import InputField from "@/components/InputField";
 import Chat from "@/components/Chat";
-import { ChatMode, ChatState, Message } from "@/types";
-import { useReducer, useState } from "react";
+import { ChatState } from "@/types";
+import { useReducer } from "react";
 
 const initialState: ChatState = {
+  mode: "chat",
   messages: [],
-  stream: { role: "assistant", image: "", content: "" },
+  stream: { role: "assistant", image: "", content: "", selectedMode: "chat" },
   botState: "standby",
 };
 
 type Action =
+  | { type: "TOGGLE_MODE" }
   | { type: "ADD_USER_MESSAGE"; payload: string }
   | { type: "APPEND_STREAM_CONTENT"; payload: string }
   | { type: "APPEND_STREAM_IMAGE"; payload: string }
@@ -21,13 +23,18 @@ type Action =
 
 function reducer(state: ChatState, action: Action): ChatState {
   switch (action.type) {
+    case "TOGGLE_MODE":
+      return {
+        ...state,
+        mode: state.mode === "chat" ? "search" : "chat",
+      };
     case "ADD_USER_MESSAGE":
       return {
         ...state,
 
         messages: [
           ...state.messages,
-          { role: "user", content: action.payload },
+          { role: "user", content: action.payload, selectedMode: state.mode },
         ],
       };
 
@@ -42,6 +49,7 @@ function reducer(state: ChatState, action: Action): ChatState {
         stream: {
           ...state.stream,
           content: state.stream.content + action.payload,
+          selectedMode: state.mode,
         },
       };
 
@@ -53,6 +61,7 @@ function reducer(state: ChatState, action: Action): ChatState {
           ...state.stream,
 
           image: action.payload,
+          selectedMode: state.mode,
         },
       };
     case "FINALIZE_ASSISTANT_MESSAGE":
@@ -69,15 +78,18 @@ function reducer(state: ChatState, action: Action): ChatState {
 }
 
 export default function Bot() {
-  const [mode, setMode] = useState<ChatMode>("chat");
-
-  const toggleMode = () =>
-    setMode((value) => (value === "chat" ? "search" : "chat"));
+  const toggleMode = () => dispatch({ type: "TOGGLE_MODE" });
 
   const [chatState, dispatch] = useReducer(reducer, initialState);
 
-  const sendMessage = async (userMessage: Message) => {
-    const updatedMessages = [...chatState.messages, userMessage];
+  const sendMessage = async (messageContent: string) => {
+    const updatedMessages = [
+      ...chatState.messages,
+      {
+        role: "user",
+        content: messageContent,
+      },
+    ];
 
     try {
       const res = await fetch("/api/chat", {
@@ -99,8 +111,6 @@ export default function Bot() {
         const chunk = decoder.decode(value || new Uint8Array(), {
           stream: true,
         });
-
-        console.log("chunk: ", chunk);
 
         dispatch({ type: "APPEND_STREAM_CONTENT", payload: chunk });
       }
@@ -170,14 +180,12 @@ export default function Bot() {
   const submit = async (messageContent: string) => {
     if (!messageContent.trim()) return;
 
-    const userMessage: Message = { role: "user", content: messageContent };
-
     dispatch({ type: "ADD_USER_MESSAGE", payload: messageContent });
 
     dispatch({ type: "SET_LOADING", payload: true });
 
-    if (mode === "chat") {
-      sendMessage(userMessage);
+    if (chatState.mode === "chat") {
+      sendMessage(messageContent);
     } else {
       search(messageContent);
     }
@@ -186,12 +194,12 @@ export default function Bot() {
   return (
     <div className={"h-[calc(100vh-4rem)] p-6 max-w-3xl mx-auto "}>
       <h1 className="text-xl font-bold mb-4">
-        {mode === "chat" ? "Chat" : "Search the web"} with AP Bot
+        {chatState.mode === "chat" ? "Chat" : "Search the web"} with AP Bot
       </h1>
 
       <div className="flex flex-col h-full justify-center">
         {chatState.messages.length > 0 ? (
-          <Chat mode={mode} chatState={chatState} />
+          <Chat chatState={chatState} />
         ) : (
           <p className="text-center text-4xl">
             Welcome to AP chat bot, Enjoy your stay here!
@@ -199,9 +207,8 @@ export default function Bot() {
         )}
 
         <InputField
-          mode={mode}
+          mode={chatState.mode}
           toggleMode={toggleMode}
-          botState={chatState.botState}
           isDisabled={chatState.botState !== "standby"}
           sendMessage={submit}
         />

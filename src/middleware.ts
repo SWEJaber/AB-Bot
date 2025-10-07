@@ -9,8 +9,6 @@ export async function middleware(request: NextRequest) {
 
     const isAuthenticated = !!token;
     
-    console.log("request: ", request.nextUrl.pathname);
-
     if (!isAuthenticated) {
         if (request.nextUrl.pathname !== "/login") {
             return NextResponse.redirect(new URL("/login", request.url))

@@ -2,14 +2,12 @@
 
 import { BiSolidSend, BiSearchAlt, BiSolidChat } from "react-icons/bi";
 
-import { BotState, ChatMode } from "@/types";
+import { ChatMode } from "@/types";
 import { useState } from "react";
 import IconButton from "@/components/IconButton";
 
 interface Props {
   mode: ChatMode;
-
-  botState: BotState;
   isDisabled: boolean;
   toggleMode: () => void;
   sendMessage: (messageContent: string) => void;
