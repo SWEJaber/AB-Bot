@@ -1,8 +1,9 @@
+import { NextResponse } from "next/server";
 import OpenAI from "openai";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-async function googleSearch(query: string, type: "web" | "image" = "web") {
+async function googleSearch(query: string, type: "web" | "image") {
   const apiKey = process.env.GOOGLE_API_KEY!;
   const cx = process.env.GOOGLE_CX!;
   const params = new URLSearchParams({ q: query, key: apiKey, cx });
@@ -30,14 +31,21 @@ async function googleSearch(query: string, type: "web" | "image" = "web") {
 export async function POST(req: Request) {
   const { message } = await req.json();
 
+
+  try {
   // Perform both searches concurrently
   const [webResults, imageResults] = await Promise.all([
     googleSearch(message, "web"),
     googleSearch(message, "image"),
   ]);
 
+
+  console.log("imageResults: ", imageResults);
+  
   const image = imageResults?.[0]?.imageUrl ?? null;
   const context = imageResults?.[0]?.context ?? null;
+
+  
 
   const sourcesText = webResults
     .map((r, i) => `[${i + 1}] ${r.title}\n${r.snippet}\n${r.link}`)
@@ -90,4 +98,9 @@ export async function POST(req: Request) {
       "Connection": "keep-alive",
     },
   });
+
+} catch (error) {
+        console.error('Error:', error);
+        return NextResponse.json({ error: 'An error occurred during your request.' }, { status: 500 });
+    }
 }

@@ -12,8 +12,9 @@ interface Props {
   chatState: ChatState;
 }
 
-const MessageComponent = (props: { message: Message }) => {
+const MessageComponent = (props: { mode: ChatMode; message: Message }) => {
   const {
+    mode,
     message: { role, content, image },
   } = props;
 
@@ -35,10 +36,10 @@ const MessageComponent = (props: { message: Message }) => {
           image ? "w-[80%]" : "max-w-[80%]"
         } p-2 rounded-2xl  text-wrap`}
       >
-        {image && (
+        {mode === "search" && role === "assistant" && (
           <Image
             className="float-right ml-3 mb-2 rounded-2xl object-cover"
-            src={image}
+            src={image ?? BOT_IMAGE_SRC}
             alt=""
             width={150}
             height={150}
@@ -86,10 +87,10 @@ export default function Chat(props: Props) {
       onScroll={handleScroll}
     >
       {messages.map((message, i) => (
-        <MessageComponent key={"" + i} message={message} />
+        <MessageComponent key={"" + i} mode={mode} message={message} />
       ))}
 
-      {stream.content && <MessageComponent message={stream} />}
+      {stream.content && <MessageComponent mode={mode} message={stream} />}
 
       {botState === "loading"
         ? mode === "chat"
