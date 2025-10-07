@@ -1,6 +1,21 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 
+type GoogleImageItem  = {
+  kind: string;
+  title: string;
+  link: string;
+  image: {
+    contextLink: string;
+    height: number;
+    width: number;
+    byteSize: number;
+    thumbnailLink: string;
+    thumbnailHeight: number;
+    thumbnailWidth: number;
+  };
+}
+
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 async function googleSearch(query: string, type: "web" | "image") {
@@ -14,14 +29,14 @@ async function googleSearch(query: string, type: "web" | "image") {
   if (!data.items) return [];
 
   if (type === "image") {
-    return data.items.map((item: any) => ({
+    return data.items.map((item: GoogleImageItem) => ({
       title: item.title,
       imageUrl: item.link,
       context: item.image.contextLink,
     }));
   }
 
-  return data.items.map((item: any) => ({
+  return data.items.map((item: GoogleImageItem) => ({
     title: item.title,
     link: item.link,
     snippet: item.snippet,
