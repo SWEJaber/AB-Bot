@@ -62,7 +62,7 @@ export async function POST(req: Request) {
   
 
   const sourcesText = webResults
-    .map((r, i) => `[${i + 1}] ${r.title}\n${r.snippet}\n${r.link}`)
+    .map((r: GoogleImageItem, i: number) => `[${i + 1}] ${r.title}\n${r.snippet}\n${r.link}`)
     .join("\n\n");
 
   const response = await openai.chat.completions.create({
