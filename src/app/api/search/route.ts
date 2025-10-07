@@ -5,6 +5,7 @@ type GoogleImageItem  = {
   kind: string;
   title: string;
   link: string;
+  snippet?: string;  
   image: {
     contextLink: string;
     height: number;
@@ -39,7 +40,7 @@ async function googleSearch(query: string, type: "web" | "image") {
   return data.items.map((item: GoogleImageItem) => ({
     title: item.title,
     link: item.link,
-    snippet: item.snippet,
+    snippet: item?.snippet?? "",
   }));
 }
 
