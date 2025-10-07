@@ -12,6 +12,14 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "eu.rarevinyl.com",
       },
+      {
+        protocol: 'https',
+        hostname: '**',   // allow all HTTPS domains
+      },
+      {
+        protocol: 'http',
+        hostname: '**',   // optional, allow HTTP domains too
+      },
     ],
   },
 };

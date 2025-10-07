@@ -2,17 +2,19 @@
 
 import { BOT_IMAGE_SRC } from "@/app/constants";
 import Avatar from "@/components/Avatar";
-import { ChatState, Message } from "@/types";
+import { ChatMode, ChatState, Message } from "@/types";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 interface Props {
+  mode: ChatMode;
   chatState: ChatState;
 }
 
 const MessageComponent = (props: { message: Message }) => {
   const {
-    message: { role, content },
+    message: { role, content, image },
   } = props;
 
   const session = useSession();
@@ -23,20 +25,36 @@ const MessageComponent = (props: { message: Message }) => {
   return (
     <div
       className={`flex gap-2  ${
-        role === "user" ? "flex-row-reverse" : "self-start"
+        role === "user" ? "flex-row-reverse" : "self-start max-w-[80%]"
       }`}
     >
       <Avatar className="mt-1" src={avatarSrc} size={30} />
 
-      <p className={`bg-amber-500 max-w-[80%] p-2 rounded-2xl text-white `}>
-        {content}
-      </p>
+      <div
+        className={`bg-amber-500 ${
+          image ? "w-[80%]" : "max-w-[80%]"
+        } p-2 rounded-2xl  text-wrap`}
+      >
+        {image && (
+          <Image
+            className="float-right ml-3 mb-2 rounded-2xl object-cover"
+            src={image}
+            alt=""
+            width={150}
+            height={150}
+          />
+        )}
+        <p className={`text-white break-words ${image ? "max-w-[80%]" : ""}`}>
+          {content}
+        </p>
+      </div>
     </div>
   );
 };
 
 export default function Chat(props: Props) {
   const {
+    mode,
     chatState: { messages, stream, botState },
   } = props;
 
@@ -64,18 +82,20 @@ export default function Chat(props: Props) {
   return (
     <div
       ref={containerRef}
-      className="flex flex-col gap-2.5 no-scrollbar h-[75%] space-y-4 mb-4 overflow-y-scroll scroll-smooth"
+      className="w-full flex flex-col gap-2.5 no-scrollbar h-[75%] space-y-4 mb-4 overflow-y-scroll scroll-smooth"
       onScroll={handleScroll}
     >
       {messages.map((message, i) => (
         <MessageComponent key={"" + i} message={message} />
       ))}
 
-      {stream && (
-        <MessageComponent message={{ role: "assistant", content: stream }} />
-      )}
+      {stream.content && <MessageComponent message={stream} />}
 
-      {botState === "loading" ? "thinking..." : ""}
+      {botState === "loading"
+        ? mode === "chat"
+          ? "thinking..."
+          : "searching the web..."
+        : ""}
     </div>
   );
 }

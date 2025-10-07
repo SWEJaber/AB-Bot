@@ -7,14 +7,14 @@ import { useReducer, useState } from "react";
 
 const initialState: ChatState = {
   messages: [],
-  stream: "",
+  stream: { role: "assistant", image: "", content: "" },
   botState: "standby",
 };
 
 type Action =
   | { type: "ADD_USER_MESSAGE"; payload: string }
-  | { type: "APPEND_STREAM"; payload: string }
-  | { type: "RESET_STREAM" }
+  | { type: "APPEND_STREAM_CONTENT"; payload: string }
+  | { type: "APPEND_STREAM_IMAGE"; payload: string }
   | { type: "FINALIZE_ASSISTANT_MESSAGE" }
   | { type: "SET_LOADING"; payload: boolean };
 
@@ -29,25 +29,37 @@ function reducer(state: ChatState, action: Action): ChatState {
           { role: "user", content: action.payload },
         ],
       };
-    case "APPEND_STREAM":
+
+    case "SET_LOADING":
+      return { ...state, botState: "loading" };
+    case "APPEND_STREAM_CONTENT":
       return {
         ...state,
-        botState: "standby",
-        stream: state.stream + action.payload,
+        botState: "typing",
+        stream: {
+          ...state.stream,
+          content: state.stream.content + action.payload,
+        },
       };
-    case "RESET_STREAM":
-      return { ...state, stream: "" };
+
+    case "APPEND_STREAM_IMAGE":
+      return {
+        ...state,
+        botState: "typing",
+        stream: {
+          ...state.stream,
+
+          image: action.payload,
+        },
+      };
     case "FINALIZE_ASSISTANT_MESSAGE":
       return {
         ...state,
-        messages: [
-          ...state.messages,
-          { role: "assistant", content: state.stream },
-        ],
-        stream: "",
+        botState: "standby",
+        messages: [...state.messages, state.stream],
+        stream: initialState.stream,
       };
-    case "SET_LOADING":
-      return { ...state, botState: "loading" };
+
     default:
       return state;
   }
@@ -73,14 +85,14 @@ export default function Bot() {
 
     const res = await fetch("/api/chat", {
       method: "POST",
-      body: JSON.stringify({ mode, messages: updatedMessages }),
+      body: JSON.stringify({ messages: updatedMessages }),
     });
+
+    dispatch({ type: "SET_LOADING", payload: false });
 
     const reader = res.body?.getReader();
     const decoder = new TextDecoder();
     let done = false;
-
-    dispatch({ type: "SET_LOADING", payload: false });
 
     while (!done) {
       const { value, done: doneReading } = await reader!.read();
@@ -91,7 +103,62 @@ export default function Bot() {
 
       console.log("chunk: ", chunk);
 
-      dispatch({ type: "APPEND_STREAM", payload: chunk });
+      dispatch({ type: "APPEND_STREAM_CONTENT", payload: chunk });
+    }
+
+    dispatch({ type: "FINALIZE_ASSISTANT_MESSAGE" });
+  };
+
+  const search = async (messageContent: string) => {
+    if (!messageContent.trim()) return;
+
+    const userMessage: Message = { role: "user", content: messageContent };
+    const updatedMessages = [...chatState.messages, userMessage];
+
+    dispatch({ type: "ADD_USER_MESSAGE", payload: messageContent });
+
+    dispatch({ type: "SET_LOADING", payload: true });
+
+    const res = await fetch("/api/search", {
+      method: "POST",
+      body: JSON.stringify({ message: messageContent }),
+    });
+
+    console.log("res: ", res);
+
+    dispatch({ type: "SET_LOADING", payload: false });
+
+    const reader = res.body?.getReader();
+    const decoder = new TextDecoder();
+    let done = false;
+
+    if (!reader) {
+      return;
+    }
+
+    while (!done && reader) {
+      const { value, done: doneReading } = await reader.read();
+      done = doneReading;
+      const chunk = decoder.decode(value);
+
+      for (const line of chunk.split("\n")) {
+        if (!line.trim()) continue;
+        try {
+          const parsed = JSON.parse(line);
+          if (parsed.type === "image")
+            dispatch({
+              type: "APPEND_STREAM_IMAGE",
+              payload: parsed.data.image,
+            });
+          else if (parsed.type === "text")
+            dispatch({
+              type: "APPEND_STREAM_CONTENT",
+              payload: parsed.data,
+            });
+        } catch (err) {
+          console.error("Failed to parse chunk:", line, err);
+        }
+      }
     }
 
     dispatch({ type: "FINALIZE_ASSISTANT_MESSAGE" });
@@ -105,7 +172,7 @@ export default function Bot() {
 
       <div className="flex flex-col h-full justify-center">
         {chatState.messages.length > 0 ? (
-          <Chat chatState={chatState} />
+          <Chat mode={mode} chatState={chatState} />
         ) : (
           <p className="text-center text-4xl">
             Welcome to AP chat bot, Enjoy your stay here!
@@ -117,7 +184,11 @@ export default function Bot() {
           toggleMode={toggleMode}
           botState={chatState.botState}
           isDisabled={chatState.botState !== "standby"}
-          sendMessage={sendMessage}
+          sendMessage={(messageContent: string) =>
+            mode === "chat"
+              ? sendMessage(messageContent)
+              : search(messageContent)
+          }
         />
       </div>
     </div>
