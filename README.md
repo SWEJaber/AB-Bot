@@ -56,10 +56,39 @@ To get `OPENAI_API_KEY`,
    3. Name the key, then click "Create secret key"
    4. Click the copy icon, then paste the key in the `.env.local` file
 
+
+To get the Google client ID and client secret:
+   1. Visit the [Google cloud console authentication page](https://console.cloud.google.com/auth)
+   2. Click "Create project"
+   3. Write the project name and select organization
+   4. Click "Create", this will take you back project overview page
+   5. Click "Get started", this will take you to the project configuration:
+        1. In App Information, fill the app name and email
+        2. In Auidence, select "External"
+        3. In Contact Information, provide your email
+        4. Agree to the Google API Services: User Data Policy
+        5. click "Create"
+   6. Click "Create OAuth client"
+        1. In Application type, select "Web application"
+        2. Name the application
+        3. Add `http://localhost:3000` to the Authorized JavaScript origins
+        4. Add `http://localhost:3000/api/auth/callback/google` to Authorized redirect URIs
+        5. Click "Create"
+        6. Copy the Client ID and Client Secret from the modal and paste it into `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` respectively in the env file
+        7. Click Ok
+        8. If the Client Secret does not appear in Step 6, then click on the project you created and you'll find the secret there
+     
+    
+
+
+
+
 4- Run the development server
 ```
 npm run dev
 ```
+
+
 
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
