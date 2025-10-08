@@ -7,9 +7,6 @@
 _AP Bot_ is a full-stack AI chat application inspired by an obscure robot mascot from the rock band <a href="https://www.discogs.com/artist/309052-Abandoned-Pools" target="_blank" rel="noopener noreferrer">Abandoned Pools</a>. It delivers a seamless chat experience similar to ChatGPT, enhanced with integrated search functionality and dynamic image result rendering.
 
 
-https://github.com/user-attachments/assets/ad28b186-a997-4640-bae9-c2228cefbf43
-
-
 ## Tech Stack
 - **Programming language**: TypeScript
 - **Fullstack framework**: React with Next.js
@@ -17,6 +14,7 @@ https://github.com/user-attachments/assets/ad28b186-a997-4640-bae9-c2228cefbf43
 - **AI Integration**: OpenAI API using the `gpt-4` model
 - **Search Integration**: Google search API with image results
 - **Platform**: Deployed on Render
+
 
 ## Getting Started
 
@@ -156,3 +154,7 @@ The easiet way to deploy AP Bot is to use [render.com](https://render.com/)'s de
 20- Go back to "Events" and wait for the app to be deployed
 
 21- Click on the link from step 10 and see your AP Bot live!
+
+
+https://github.com/user-attachments/assets/4d3af4fe-2595-4dfb-bfa9-8a5dab81c430
+
