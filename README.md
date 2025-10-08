@@ -37,12 +37,10 @@ touch .env.local
 # AI Key
 OPENAI_API_KEY=<chatgpt-key>
 
-# Authentication key
+# Authentication keys
 GOOGLE_CLIENT_ID=<client-id>
 GOOGLE_CLIENT_SECRET=<client-secret>
-NEXTAUTH_SECRET=
-
-# Redirection key
+NEXTAUTH_SECRET=<nextjs-secret>
 NEXTAUTH_URL=<redirection-url>
 
 # Search keys
@@ -50,6 +48,13 @@ GOOGLE_API_KEY=<api-key>
 GOOGLE_CX=<cx>
 ```
 
+
+To get `OPENAI_API_KEY`, 
+
+   1. Visit the [OpenAPI api keys page](https://platform.openai.com/api-keys)
+   2. Click "Create new secret key", this will open up a modal
+   3. Name the key, then click "Create secret key"
+   4. Click the copy icon, then paste the key in the `.env.local` file
 
 4- Run the development server
 ```
