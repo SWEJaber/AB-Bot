@@ -1,4 +1,12 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+_AP Bot_ is a full-stack AI chat application inspired by an obscure robot mascot from the rock band Abandoned Pools. It delivers a seamless chat experience similar to ChatGPT, enhanced with integrated search functionality and dynamic image result rendering.
+
+## Tech Stack
+- **Programming language**: TypeScript
+- **Fullstack framework**: React with Next.js
+- **Authentication**: Google OAuth Single Sign-On
+- **AI Integration**: OpenAI API using the `gpt-4` model
+- **Search Integration**: Google search API with image results
+- **Platform**: Deployed on Render
 
 ## Getting Started
 
