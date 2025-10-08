@@ -44,8 +44,8 @@ NEXTAUTH_SECRET=<nextjs-secret>
 NEXTAUTH_URL=<redirection-url>
 
 # Search keys
-GOOGLE_API_KEY=<api-key>
 GOOGLE_CX=<cx>
+GOOGLE_API_KEY=<api-key>
 ```
 
 4- Get `OPENAI_API_KEY`
@@ -54,8 +54,7 @@ GOOGLE_CX=<cx>
    3. Name the key, then click "Create secret key"
    4. Click the copy icon, then paste the key in the `.env.local` file
 
-5- Get Google Authentication Keys
-To get the Google client ID and client secret:
+5- Get Google authentication Keys
    1. Visit the [Google cloud console authentication page](https://console.cloud.google.com/auth)
    2. Click "Create project"
    3. Write the project name and select organization
@@ -87,28 +86,29 @@ This is used by Google Auth to redirect the user back to the AP Bot website.
 NEXTAUTH_URL=http://localhost:3000
 ```
 
-8- Run the development server
+8- Get Google Search API keys
+   1. Visit [Google's programmable search engine control panel](https://programmablesearchengine.google.com/controlpanel/all)
+   2. Click "Add"
+   3. Name your search engine
+   4. Select "Search the entire web" in **What to search?**
+   5. Turn on "Image search" and "SafeSearch" in **Search settings**
+   6. Click "Create"
+   7. Click "Customize"
+   8. Copy the **Search engine ID** value and paste it to `GOOGLE_CX` in the env file
+   9. Scroll to **Programmatic Access** and click "Get started" (notice the query limit per day)
+   10. In **Identify your application to Google with API key**, click "Get a key"
+   11. Select a project, then click "Next"
+   12. Click "CONFIRM AND CONTINUE"
+   13. Click "SHOW KEY" and paste the value to `GOOGLE_API_KEY`
+
+
+9- Run the development server
 ```
 npm run dev
 ```
 
-
-
-
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 
-## Learn More
+## Deploy on Render
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
