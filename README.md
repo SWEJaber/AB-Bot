@@ -111,4 +111,48 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 
 ## Deploy on Render
+The easiet way to deploy AP Bot is to use [render.com](https://render.com/)'s deployment service.
 
+1- Go to the [Render dashboard](https://dashboard.render.com/)
+
+2- Click "Add new"
+
+3- Select "Web Service"
+
+4- Select "Public repository" and paste `https://github.com/SWEJaber/AB-Bot`
+
+5- Name the project
+
+6- Select the "Free" instance 
+
+7- Go back to your local .env file and copy all of the file's content
+
+7- In **Environment Variables**, click "Add from .env"
+
+8- Paste the local .env values there, then click "Add variables"
+
+9- Click "Deploy Web Service", it will redirect you to the project's Events page
+
+10- At the top, there should be a url that looks like this `https://<project-name>.onrender.com`, copy it
+
+11- Open a new tab and visit the [Google cloud console authentication clients page](https://console.cloud.google.com/auth/clients)
+
+12- Select the project you created 
+
+13- On the **Authorized JavaScript origins**, paste the link you copied from step 10.
+
+14- On the **Authorized redirect URIs**, paste the link you copied from step 10 and append `/api/auth/callback/google`, your URI should look like this `https://<project-name>.onrender.com/api/auth/callback/google`, copy it
+
+15- Click "Save"
+
+16- Go back to your Render project and go to **Environment**
+
+17- Click "Edit"
+
+18- Paste the value from step 14 into `NEXTAUTH_URL`
+
+19- Click "Save, rebuild, and deploy"
+
+20- Go back to "Events" and wait for the app to be deployed
+
+21- Click on the link from step 10 and see your AP Bot live!
