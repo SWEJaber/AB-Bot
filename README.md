@@ -48,15 +48,13 @@ GOOGLE_API_KEY=<api-key>
 GOOGLE_CX=<cx>
 ```
 
-
-To get `OPENAI_API_KEY`, 
-
+4- Get `OPENAI_API_KEY`
    1. Visit the [OpenAPI api keys page](https://platform.openai.com/api-keys)
    2. Click "Create new secret key", this will open up a modal
    3. Name the key, then click "Create secret key"
    4. Click the copy icon, then paste the key in the `.env.local` file
 
-
+5- Get Google Authentication Keys
 To get the Google client ID and client secret:
    1. Visit the [Google cloud console authentication page](https://console.cloud.google.com/auth)
    2. Click "Create project"
@@ -76,14 +74,20 @@ To get the Google client ID and client secret:
         5. Click "Create"
         6. Copy the Client ID and Client Secret from the modal and paste it into `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` respectively in the env file
         7. Click Ok
-        8. If the Client Secret does not appear in Step 6, then click on the project you created and you'll find the secret there
-     
-    
+        8. If the Client Secret does not appear, then click on the project you created and you'll find the secret there
 
+6- Generate `NEXTAUTH_SECRET`
+Paste the output of the following command to `NEXTAUTH_SECRET`
+```
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+7- Add the localhost to `NEXTAUTH_URL`
+This is used by Google Auth to redirect the user back to the AP Bot website.
+```
+NEXTAUTH_URL=http://localhost:3000
+```
 
-
-
-4- Run the development server
+8- Run the development server
 ```
 npm run dev
 ```
