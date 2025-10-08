@@ -149,7 +149,7 @@ The easiet way to deploy AP Bot is to use [render.com](https://render.com/)'s de
 
 17- Click "Edit"
 
-18- Paste the value from step 14 into `NEXTAUTH_URL`
+18- Paste the value from step 10 into `NEXTAUTH_URL`
 
 19- Click "Save, rebuild, and deploy"
 
