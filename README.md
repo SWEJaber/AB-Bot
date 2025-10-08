@@ -20,23 +20,45 @@ https://github.com/user-attachments/assets/ad28b186-a997-4640-bae9-c2228cefbf43
 
 ## Getting Started
 
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+1- Clone AP Bot
 ```
+git clone https://github.com/SWEJaber/AB-Bot.git
+```
+
+2- Create the local env file
+
+In the root folder of the project, run this command:
+```
+touch .env.local
+```
+
+3- Paste the environment variables in .env.local
+```
+# AI Key
+OPENAI_API_KEY=<chatgpt-key>
+
+# Authentication key
+GOOGLE_CLIENT_ID=<client-id>
+GOOGLE_CLIENT_SECRET=<client-secret>
+NEXTAUTH_SECRET=
+
+# Redirection key
+NEXTAUTH_URL=<redirection-url>
+
+# Search keys
+GOOGLE_API_KEY=<api-key>
+GOOGLE_CX=<cx>
+```
+
+
+4- Run the development server
+```
+npm run dev
+```
+
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
 ## Learn More
 
