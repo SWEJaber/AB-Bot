@@ -1,4 +1,10 @@
-_AP Bot_ is a full-stack AI chat application inspired by an obscure robot mascot from the rock band Abandoned Pools. It delivers a seamless chat experience similar to ChatGPT, enhanced with integrated search functionality and dynamic image result rendering.
+
+<h1 align="left">
+  <img src="./public/ap-bot.webp" alt="AP Bot Logo" width="40" />
+  AP Bot
+</h1>
+
+_AP Bot_ is a full-stack AI chat application inspired by an obscure robot mascot from the rock band <a href="https://www.discogs.com/artist/309052-Abandoned-Pools" target="_blank" rel="noopener noreferrer">Abandoned Pools</a>. It delivers a seamless chat experience similar to ChatGPT, enhanced with integrated search functionality and dynamic image result rendering.
 
 ## Tech Stack
 - **Programming language**: TypeScript
